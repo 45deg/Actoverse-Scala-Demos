@@ -31,7 +31,7 @@ class Cohort(decision: Boolean) extends Actor with DebuggingSupporter {
   }
 }
 
-object Main {
+object TwoPhaseCommit {
   def main(args: Array[String]){
     implicit val system = ActorSystem()
     val debuggingSystem = new DebuggingSystem
