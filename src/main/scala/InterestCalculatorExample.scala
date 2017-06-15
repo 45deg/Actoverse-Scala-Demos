@@ -6,10 +6,12 @@ This example comes from [1].
 
 ***/
 
-
 import actoverse._
 import akka.actor._
 import scala.collection.mutable.ListBuffer
+
+@Comprehensive
+case class Ack(body: Any)
 
 class Bank(bankAccount: ActorRef, inputReader: ActorRef)
   extends Actor with DebuggingSupporter {
@@ -17,15 +19,16 @@ class Bank(bankAccount: ActorRef, inputReader: ActorRef)
 
     case "start" =>
       inputReader !+ "read"
-    case InputValue(account) =>
+    case Ack(InputValue(account)) =>
       bankAccount !+ Deposit(account)
 
-    case "ack-deposit" =>
-      bankAccount !+ "addInterest"
+    case Ack("deposit") =>
+      bankAccount !+ "add_interest"
   }
 }
 
-case class Deposit(deposit: Int)
+@Comprehensive
+case class Deposit(d: Int)
 
 class BankAccount(interestCalculator: ActorRef)
   extends Actor with DebuggingSupporter {
@@ -33,23 +36,28 @@ class BankAccount(interestCalculator: ActorRef)
   val receive: Receive = {
     case Deposit(d) =>
       deposit = d
-      sender !+ "ack-deposit"
-    case "addInterest" =>
-      interestCalculator !+ ("calculateNewDeposit", deposit, 0.05)
+      sender !+ Ack("deposit")
+    case "add_interest" =>
+      interestCalculator !+ DoCaculate(deposit, 0.05)
   }
 }
 
+@Comprehensive
 case class InputValue(value: Int)
+
 class InputReader extends Actor with DebuggingSupporter {
   val receive: Receive = {
     case "read" =>
-      sender !+ InputValue(-1)
+      sender !+ Ack(InputValue(-1))
   }
 }
 
+@Comprehensive
+case class DoCaculate(deposit: Int, interest: Double)
+
 class InterestCalculator extends Actor with DebuggingSupporter {
   val receive: Receive = {
-    case ("calculateNewDeposit", deposit, interest) =>
+    case DoCaculate(deposit, interest) =>
       print("Boom!")
   }
 }
