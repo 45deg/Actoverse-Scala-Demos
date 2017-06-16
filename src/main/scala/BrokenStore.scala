@@ -45,6 +45,7 @@ class DataBase extends Actor with DebuggingSupporter {
       sender !+ (name, data(name))
     case SetAccount(name, value) =>
       data = data + (name -> value)
+      println(s"Updated: $name: $value")
   }
 }
 
