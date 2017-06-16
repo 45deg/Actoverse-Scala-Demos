@@ -4,6 +4,7 @@
 
 - Two-Phase Commit Protocol
 - InterestCalculator (Derived from [1], "Motivating Example")
+- Online Store (including atomic violations)
 
 ## How to run
 
