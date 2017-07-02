@@ -12,6 +12,9 @@ Requirements: Scala 2.11.8+, sbt 0.13.15+
 
 1. Clone this repository
 2. Run the command `sbt run`
+3. Then you can debug via Actoverse with the address `localhost:3000`.
+
+Tips: If you use `0.0.0.0` instead of `localhost` (you can change it in `src/main/recources/application.conf`), Actoverse can access from outside your machine.
 
 ## Bibliography
 
