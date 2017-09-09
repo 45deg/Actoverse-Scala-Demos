@@ -16,6 +16,9 @@ class AsyncAnd(out: ActorRef) extends Actor with DebuggingSupporter {
   val receive: Receive = {
     case SetCount(n) => 
       limit = n
+      if(count == limit) {
+        out !+ true
+      }
     case (v: Boolean) =>
       if (v) {
         count += 1
