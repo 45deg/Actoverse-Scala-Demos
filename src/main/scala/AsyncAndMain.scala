@@ -12,13 +12,14 @@ class Output extends Actor with DebuggingSupporter {
 
 class AsyncAnd(out: ActorRef) extends Actor with DebuggingSupporter {
   @State var count: Int = 0
+  @State var limit: Int = 0
   val receive: Receive = {
     case SetCount(n) => 
-      count = n
+      limit = n
     case (v: Boolean) =>
       if (v) {
-        count -= 1
-        if(count == 0) {
+        count += 1
+        if(count == limit) {
           out !+ true
         }
       } else {
