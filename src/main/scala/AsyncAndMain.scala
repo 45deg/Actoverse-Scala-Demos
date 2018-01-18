@@ -1,17 +1,17 @@
-import actoverse._
+
 import akka.actor._
 
-class Output extends Actor with DebuggingSupporter {
+class Output extends Actor {
   val receive: Receive = {
     case msg =>
       println(msg)
   }
 }
 
-@Comprehensive case class SetCount(num: Int)
+ case class SetCount(num: Int)
 
-class AsyncAnd(out: ActorRef) extends Actor with DebuggingSupporter {
-  @State var count: Int = 0
+class AsyncAnd(out: ActorRef) extends Actor {
+   var count: Int = 0
   val receive: Receive = {
     case SetCount(n) => 
       count = n
@@ -19,38 +19,35 @@ class AsyncAnd(out: ActorRef) extends Actor with DebuggingSupporter {
       if (v) {
         count -= 1
         if(count == 0) {
-          out !+ true
+          out ! true
         }
       } else {
-        out !+ false
+        out ! false
       }
   }
 }
 
 class MockResponder (response: Boolean, target: ActorRef)
- extends Actor with DebuggingSupporter {
+ extends Actor {
   val receive: Receive = {
     case _ =>
-      target !+ response
+      target ! response
   }
 }
 
 
-class CoordinatorActor(asyncAnd: ActorRef, creditChecker: ActorRef, addressChecker: ActorRef) extends Actor with DebuggingSupporter {
+class CoordinatorActor(asyncAnd: ActorRef, creditChecker: ActorRef, addressChecker: ActorRef) extends Actor {
   val receive: Receive = {
     case "start" => 
-      asyncAnd !+ SetCount(2)
-      creditChecker !+ "CARDNUMBER"
-      addressChecker !+ "ADDRESS"
+      asyncAnd ! SetCount(2)
+      creditChecker ! "CARDNUMBER"
+      addressChecker ! "ADDRESS"
   }
 }
 
 object AsyncAndMain {
   def main(args: Array[String]){
     implicit val system = ActorSystem()
-    val debuggingSystem = new DebuggingSystem
-    debuggingSystem.introduce(system)
-
     val printer = system.actorOf(Props[Output], name="result")
     val asyncAnd = system.actorOf(Props(classOf[AsyncAnd], printer)
                                   , name="async_and")
