@@ -1,0 +1,1 @@
+addSbtPlugin("com.github.45deg" %% "actoverse-sbt" % "0.2.0-SNAPSHOT")
