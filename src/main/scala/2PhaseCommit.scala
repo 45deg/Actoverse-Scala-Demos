@@ -33,7 +33,7 @@ class Cohort(decision: Boolean) extends Actor {
 
 object TwoPhaseCommit {
   def main(args: Array[String]){
-    implicit val system = ActorSystem()
+    implicit val system = ActorSystem("demo")
     val cohorts = (1 to 3) map { (n: Int) =>
       system.actorOf(Props(classOf[Cohort], true), name=s"cohort-$n")
     }

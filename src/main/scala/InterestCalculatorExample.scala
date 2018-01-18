@@ -65,7 +65,7 @@ class InterestCalculator extends Actor {
 
 object InterestCalculatorExample {
   def main(args: Array[String]){
-    implicit val system = ActorSystem()
+    implicit val system = ActorSystem("demo")
     val interestCalculator = system.actorOf(Props[InterestCalculator], name="interest")
     val inputReader = system.actorOf(Props[InputReader], name="inputreader")
     val bankAccount = system.actorOf(Props(classOf[BankAccount], interestCalculator),

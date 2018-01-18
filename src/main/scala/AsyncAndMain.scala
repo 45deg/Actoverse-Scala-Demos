@@ -1,4 +1,5 @@
 
+
 import akka.actor._
 
 class Output extends Actor {
@@ -47,7 +48,7 @@ class CoordinatorActor(asyncAnd: ActorRef, creditChecker: ActorRef, addressCheck
 
 object AsyncAndMain {
   def main(args: Array[String]){
-    implicit val system = ActorSystem()
+    implicit val system = ActorSystem("demo")
     val printer = system.actorOf(Props[Output], name="result")
     val asyncAnd = system.actorOf(Props(classOf[AsyncAnd], printer)
                                   , name="async_and")

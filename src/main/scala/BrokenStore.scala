@@ -51,7 +51,7 @@ class DataBase extends Actor {
 
 object BrokenStore {
   def main(args: Array[String]){
-    implicit val system = ActorSystem()
+    implicit val system = ActorSystem("demo")
     val database = system.actorOf(Props[DataBase], name="db")
     val controller = system.actorOf(Props(classOf[Controller], database),
                                      name="controller")
