@@ -6,56 +6,56 @@ This example comes from [1].
 
 ***/
 
-import actoverse._
+
 import akka.actor._
 import scala.collection.mutable.ListBuffer
 
-@Comprehensive
+ 
 case class Ack(body: Any)
 
 class Bank(bankAccount: ActorRef, inputReader: ActorRef)
-  extends Actor with DebuggingSupporter {
+  extends Actor {
   val receive: Receive = {
 
     case "start" =>
-      inputReader !+ "read"
+      inputReader ! "read"
     case Ack(InputValue(account)) =>
-      bankAccount !+ Deposit(account)
+      bankAccount ! Deposit(account)
 
     case Ack("deposit") =>
-      bankAccount !+ "add_interest"
+      bankAccount ! "add_interest"
   }
 }
 
-@Comprehensive
+ 
 case class Deposit(d: Int)
 
 class BankAccount(interestCalculator: ActorRef)
-  extends Actor with DebuggingSupporter {
-  @State var deposit: Int = -1
+  extends Actor {
+   var deposit: Int = -1
   val receive: Receive = {
     case Deposit(d) =>
       deposit = d
-      sender !+ Ack("deposit")
+      sender ! Ack("deposit")
     case "add_interest" =>
-      interestCalculator !+ DoCaculate(deposit, 0.05)
+      interestCalculator ! DoCaculate(deposit, 0.05)
   }
 }
 
-@Comprehensive
+ 
 case class InputValue(value: Int)
 
-class InputReader extends Actor with DebuggingSupporter {
+class InputReader extends Actor {
   val receive: Receive = {
     case "read" =>
-      sender !+ Ack(InputValue(-1))
+      sender ! Ack(InputValue(-1))
   }
 }
 
-@Comprehensive
+ 
 case class DoCaculate(deposit: Int, interest: Double)
 
-class InterestCalculator extends Actor with DebuggingSupporter {
+class InterestCalculator extends Actor {
   val receive: Receive = {
     case DoCaculate(deposit, interest) =>
       print("Boom!")
@@ -65,10 +65,7 @@ class InterestCalculator extends Actor with DebuggingSupporter {
 
 object InterestCalculatorExample {
   def main(args: Array[String]){
-    implicit val system = ActorSystem()
-    val debuggingSystem = new DebuggingSystem
-    debuggingSystem.introduce(system)
-
+    implicit val system = ActorSystem("demo")
     val interestCalculator = system.actorOf(Props[InterestCalculator], name="interest")
     val inputReader = system.actorOf(Props[InputReader], name="inputreader")
     val bankAccount = system.actorOf(Props(classOf[BankAccount], interestCalculator),
