@@ -3,7 +3,7 @@ import akka.actor._
 import scala.collection.mutable.ListBuffer
 
 class Coordinator(cohorts: Seq[ActorRef]) extends Actor with DebuggingSupporter {
-  @State var responses = ListBuffer[Boolean]()
+  var responses = ListBuffer[Boolean]()
   val receive: Receive = {
     case "start_2pc" =>
       cohorts.foreach(_ !+ "query")
