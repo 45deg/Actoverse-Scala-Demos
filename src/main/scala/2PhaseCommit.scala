@@ -1,22 +1,22 @@
 
 import akka.actor._
-import scala.collection.mutable.ListBuffer
 
 class Coordinator(cohorts: Seq[ActorRef]) extends Actor {
-  var responses = ListBuffer[Boolean]()
+  var responses = List[Boolean]()
   val receive: Receive = {
     case "start_2pc" =>
       cohorts.foreach(_ ! "query")
     case ("agreement", d: Boolean) =>
-      responses += d
+      responses = d :: responses
       if( responses.size == cohorts.size ) {
         if(responses.forall(a => a)) {
           cohorts.foreach(_ ! "commit")
         } else {
           cohorts.foreach(_ ! "rollback")
         }
-        responses.clear()
+        responses = List[Boolean]()
       }
+    case _ => ()
   }
 }
 
